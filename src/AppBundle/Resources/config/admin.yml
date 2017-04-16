@@ -1,0 +1,11 @@
+services:
+    app.admin.empresa:
+        class: AppBundle\Admin\EmpresaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Admin", label: "Empresas" }
+        arguments:
+            - ~
+            - AppBundle\Entity\Empresa
+            - ~
+        calls:
+            - [ setTranslationDomain, [AppBundle]]
