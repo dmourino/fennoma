@@ -6,6 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Empresa controller.
@@ -22,14 +26,17 @@ class ApiEmpresaController extends Controller
      */
     public function indexAction()
     {
-        $empresas = $this->getDoctrine()
-            ->getRepository('AppBundle:Empresa')
-            ->createQueryBuilder('e')
-            ->select('e')
-            ->getQuery()
-            ->getArrayResult()
-        ;
+        $empresas = $this->getDoctrine()->getRepository('AppBundle:Empresa')->findAll();
 
-        return new JsonResponse($empresas);
+        $encoder = new JsonEncoder();
+        $normalizer = new GetSetMethodNormalizer();
+
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $json = $serializer->serialize($empresas, 'json');
+
+        $response = new Response($json);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 }
