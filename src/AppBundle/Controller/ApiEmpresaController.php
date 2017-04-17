@@ -28,15 +28,25 @@ class ApiEmpresaController extends Controller
     {
         $empresas = $this->getDoctrine()->getRepository('AppBundle:Empresa')->findAll();
 
-        $encoder = new JsonEncoder();
-        $normalizer = new GetSetMethodNormalizer();
-
-        $serializer = new Serializer(array($normalizer), array($encoder));
-        $json = $serializer->serialize($empresas, 'json');
+        $json = $this->serialize($empresas);
 
         $response = new Response($json);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
+    }
+
+    /**
+     * @param $data
+     * @return string|\Symfony\Component\Serializer\Encoder\scalar
+     */
+    public function serialize($data)
+    {
+        $encoder = new JsonEncoder();
+        $normalizer = new GetSetMethodNormalizer();
+
+        $serializer = new Serializer(array($normalizer), array($encoder));
+        $json = $serializer->serialize($data, 'json');
+        return $json;
     }
 }
